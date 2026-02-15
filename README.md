@@ -5,8 +5,8 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 **Weft** is built around three workspaces:
 
 - **Warp** — Audio labeling, model training, and batch processing for bioacoustic classification
-- **Weft** — Data analysis and visualization for acoustic monitoring and environmental data
-- **Weave** — Reports, posters, and interactive data stories *(coming soon)*
+- **Weft** — Data analysis and visualization for acoustic monitoring and environmental data *(coming soon)*
+- **Weave** — Reports, posters, and interactive data stories *(coming later)*
 
 ## Download
 
@@ -57,14 +57,13 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 
 ## Updates
 
-Weft checks for updates automatically. You can also check manually via **Settings > Check for Updates**. Updates install in-place — your projects and data are never affected.
+You can also check manually via **Settings > Check for Updates**. Updates install in-place — your projects and data are never affected.
 
 ## Your Data
 
 All data stays on your machine in `~/WeftProjects/`. Weft does not upload your project data to any server. Anonymous usage telemetry (app launches, feature usage) is collected to improve the product — no personal data or project data is included.
 
 ## Feedback
-
 - [Report a bug](https://github.com/loggerhead-instruments/weft/issues/new?template=bug_report.md)
 - [Request a feature](https://github.com/loggerhead-instruments/weft/issues/new?template=feature_request.md)
 
