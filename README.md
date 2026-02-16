@@ -314,3 +314,14 @@ Sorting Project(s)  →  Training Project  →  Processing Project
 - One training project can pull from multiple sorting projects
 - One trained model can be used in multiple processing projects
 - Processing output (CSV) can be imported into Weft for analysis
+
+---
+
+## Feedback & Support
+
+- [Report a Bug](https://github.com/loggerhead-instruments/weft/issues/new?template=bug_report.md)
+- [Request a Feature](https://github.com/loggerhead-instruments/weft/issues/new?template=feature_request.md)
+
+---
+
+© 2026 Loggerhead Instruments
