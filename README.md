@@ -215,6 +215,33 @@ Create a **Processing Project** to run a trained model on new, unlabeled recordi
 | **Step size** | 50% | Overlap between chunks. 50% means each moment of audio is analyzed twice |
 | **Min confidence** | 50% | Only export detections above this confidence threshold |
 | **Save chunks** | Off | Optionally save WAV clips of detected sounds |
+| **Consecutive detections** | 1 | Require N chunks in a row with the same label before reporting a detection |
+
+### Consecutive Detections
+
+When processing with overlapping chunks, you can require multiple consecutive chunks to predict the same label before reporting a detection. This reduces false positives by confirming that a signal persists across overlapping windows.
+
+**How it works:** After classification, chunks are grouped by file and sorted by position. The system finds runs of consecutive chunks with the same predicted label. A run of length L with threshold N produces floor(L/N) detections — one every N chunks. Runs shorter than N are discarded entirely.
+
+**Example — 50% overlap, consecutive = 2:**
+```
+Chunks:  [whale] [whale] [whale] [whale] [noise]
+Result:  2 detections (whale run of 4 → floor(4/2) = 2, at chunks 1 and 3)
+         The lone [noise] is discarded.
+```
+
+**Example — 50% overlap, consecutive = 2:**
+```
+Chunks:  [whale] [whale] [noise] [whale] [noise]
+Result:  1 detection (whale run of 2 → floor(2/2) = 1)
+         The lone [whale] at chunk 4 is discarded — only 1 in a row.
+```
+
+**Example — consecutive = 1 (default):**
+```
+Chunks:  [whale] [noise] [whale] [whale] [noise]
+Result:  5 detections (every chunk reported as-is, no filtering)
+```
 
 ### Output
 
