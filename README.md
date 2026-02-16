@@ -233,8 +233,9 @@ This CSV follows the observation schema used by Weft's analysis workspace — yo
 
 ### Label Quality Matters More Than Quantity
 
-- **Be consistent**: If you're unsure about a file, skip it rather than guessing. A small, clean dataset trains better than a large, noisy one.
-- **Use the confusion matrix**: After training, review the files the model got wrong. Often the "mistake" is actually a mislabeled file. Fix the label and retrain.
+- **Be consistent**: If you're unsure about a file, skip it rather than guessing. A few mislabeled files are OK — you'll catch them during training.
+- **Include background noise**: Always include normal background sounds in your training set. The model needs to learn what is NOT a signal.
+- **Use the confusion matrix**: After training, review the files the model got wrong. You'll often discover target signals hiding in your background category that can be moved to the correct label. Fix and retrain.
 
 ### Get Enough Labels
 
