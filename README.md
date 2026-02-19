@@ -46,17 +46,279 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 - GBIF-standardized species labels
 
 ### Weft Workspace
-- Import CSV, NDJSON, JSON, and DuckDB files
-- Interactive map view with point and heatmap layers
+- Import CSV, Parquet, NDJSON, JSON, and DuckDB files
+- Interactive map view with dots, heatmap, and hexbin layers
+- Timeline, category, numeric distribution, and day-hour heatmap charts
 - Data table with virtual scrolling
-- Metrics banner (detection count, rate, date range)
-- Filter by category, confidence, and date range
+- Environmental data enrichment (weather, air quality, elevation)
+- AI-powered analysis advisor with natural language queries
+- Aggregation by any numeric column with SUM, AVG, MAX, MIN
+- Year-over-year comparison mode
+- Six colorblind-safe palettes with per-category color customization
+- Dark/light chart themes for print-ready output
 
-### Coming Soon
-- Charts and statistical analysis
-- AI-powered analysis advisor
-- Weave workspace for reports and data stories
+### Weave Workspace *(coming soon)*
+- Reports, posters, and interactive data stories from your analysis
 
+
+# Weft Analysis Guide
+
+Weft is the analysis workspace for spatiotemporal data. Import detection CSVs from Warp (or any tabular data with coordinates and timestamps), visualize on interactive maps and charts, enrich with environmental data, and explore with the AI Advisor.
+
+## Getting Started
+
+### Creating a Project
+
+1. Go to the **Projects** tab
+2. Click **New Project**, give it a name and choose a location
+3. The project creates a local DuckDB database to store your data
+
+### Importing Data
+
+Go to the **Data** tab and click **Import**. Supported formats:
+
+- **CSV** — Comma-separated values (most common for Warp processing output)
+- **Parquet** — Columnar binary format (fast, compact)
+- **JSON / NDJSON** — Newline-delimited JSON records
+- **DuckDB** — Import tables from another DuckDB database
+
+### Column Mapping
+
+After import, map your columns in the sidebar so Weft knows how to interpret your data:
+
+| Column | Purpose |
+|--------|---------|
+| **Datetime** | Timestamp column — enables timeline charts, time-based aggregation |
+| **Category** | Grouping column — species, call type, etc. |
+| **Latitude / Longitude** | Enables map view and environmental enrichment |
+| **Numeric columns** | Any numeric field available for aggregation (confidence, count, etc.) |
+
+---
+
+## Map View
+
+The map shows your data geographically. Requires latitude and longitude columns to be mapped.
+
+### Display Modes
+
+| Mode | Description |
+|------|-------------|
+| **Dots** | Individual points at each location, sized by count or aggregated variable |
+| **Heatmap** | Continuous density surface |
+| **Hexbin** | Hexagonal grid aggregation |
+
+### Map Styles
+
+Six base map styles: Dark Matter, Light, Streets, Satellite, Ocean, and Terrain.
+
+### Location Selection
+
+Click individual points to select locations, or use box selection (Shift+drag) to select a region. Selected locations filter the charts and table views.
+
+### Color Palettes
+
+Six colorblind-safe palettes: Okabe-Ito, Wong, Tol Bright, Tol Muted, Set 2, Paired. You can also customize colors per category by clicking the color chip next to each category name.
+
+---
+
+## Charts View
+
+### Available Charts
+
+| Chart | Description |
+|-------|-------------|
+| **Summary Metrics** | Quick statistics — total detections, rate, date range |
+| **Timeline** | Activity over time, binned by your chosen time interval |
+| **Category Breakdown** | Distribution across categories |
+| **Numeric Distributions** | Histograms for numeric columns |
+| **Day x Hour Heatmap** | Activity patterns by day of week and hour of day |
+
+### Chart Controls
+
+- Toggle chart visibility in the sidebar
+- Click a chart title to expand it full-screen (Esc to exit)
+- Drag the bottom edge to resize height
+- Switch between bar, line, and dot chart types
+- Toggle dark/light theme for print-friendly charts
+
+### Year-over-Year Mode
+
+Enable in the sidebar to overlay years. Each year becomes a separate trace, aligned by day of year. Useful for comparing seasonal patterns across years. When YoY is active, time bins smaller than one day are disabled.
+
+---
+
+## Aggregation Pipeline
+
+Weft uses a **two-stage aggregation pipeline** to efficiently summarize large datasets for the map, timeline, and other visualizations.
+
+### Stage 1: Backend SQL Aggregation
+
+The backend groups your raw data by **(latitude, longitude, time_bin, category)** and applies the selected aggregation function. For example, if you have 10,000 raw detections at a location over a week, a "Week" time bin with "SUM(detectionCount)" produces one row per location per week with the summed value.
+
+```sql
+-- Simplified example
+SELECT lat, lon, time_bucket('7 day', datetime) AS time_bin,
+       category, SUM(detectionCount) AS detectionCount_sum
+FROM detections
+GROUP BY lat, lon, time_bin, category
+```
+
+Each location gets back a record with:
+- `count` — number of raw rows in the group
+- `numerics` — a map of `{column}_{agg}` keys (e.g. `detectionCount_sum`, `confidence_avg`)
+
+### Stage 2: Frontend Cross-Location Summing
+
+The timeline and category charts **sum the pre-aggregated values across all locations** for each time bin. This collapses the spatial dimension so you see a single time series.
+
+**Example:** 3 locations, weekly bins, SUM(detectionCount)
+
+| Location | Week 1 | Week 2 |
+|----------|--------|--------|
+| A | 45 | 52 |
+| B | 30 | 28 |
+| C | 25 | 31 |
+| **Timeline** | **100** | **111** |
+
+### Aggregation Variable
+
+By default, the map and charts use **Count** (number of rows). You can switch to any numeric column in the sidebar under **Variable**:
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| **Count** | Number of rows per group (default) | 150 detections this week |
+| **Sum** | Total of the numeric column | Total detectionCount = 847 |
+| **Average** | Mean of the numeric column per location | Avg confidence = 0.82 |
+| **Maximum** | Highest value in the group | Peak confidence = 0.99 |
+| **Minimum** | Lowest value in the group | Min confidence = 0.51 |
+
+### Time Bin Size
+
+The time bin controls the resolution of the timeline and heatmap:
+
+| Bin | Best For |
+|-----|----------|
+| **Hour / 6 Hours** | Short-duration datasets with fine detail |
+| **Day** | Default — good balance of detail and readability |
+| **Week / Month** | Smooths out noise, reveals long-term trends |
+| **Custom** | Specify any number of hours (1–720) |
+
+### Threshold Filter
+
+After aggregation, you can filter by the aggregated value. For example, set a minimum of 5 to hide locations with fewer than 5 detections per time bin. This filters both map points and chart data.
+
+### Day x Hour Heatmap Aggregation
+
+The heatmap uses a separate SQL query that groups by day-of-week and hour-of-day directly from the raw table. When a numeric aggregation variable is selected, the heatmap applies that function (e.g., `SUM(detectionCount)`) instead of `COUNT(*)`.
+
+> **Note on Average aggregation:** When using Average, the timeline sums per-location averages across locations. This is a sum-of-averages, not a true global average. For a single location it is exact, but across multiple locations with different row counts, it weights each location equally regardless of sample size.
+
+---
+
+## Filters
+
+Filters in the left sidebar constrain which data is displayed across all views (map, charts, table).
+
+| Filter | Description |
+|--------|-------------|
+| **Category** | Check/uncheck categories. Use the search box to find specific categories |
+| **Date Range** | Set From and To dates to focus on a specific time period |
+| **Numeric Range** | Set min/max bounds on any numeric column (e.g., confidence >= 0.8) |
+
+Numeric range filters are applied to raw data **before** aggregation. The threshold filter is applied **after** aggregation.
+
+### Large Dataset Mode
+
+For tables with more than 100 million rows, filters are not applied automatically. Instead, adjust your filters and click **Update** to re-query. This prevents accidental long-running queries.
+
+---
+
+## Environment Tab
+
+The Environment tab shows relationships between your detection data and environmental variables. Requires latitude, longitude, and datetime columns.
+
+### Astronomical Charts
+
+Always available when coordinates and timestamps are mapped:
+
+- **Activity Relative to Sunrise** — Detection timing relative to sunrise/sunset
+- **Activity by Moon Phase** — Detection counts across lunar phases
+- **Nocturnal by Moon Phase** — Same as above, filtered to nighttime only
+
+### Weather & Air Quality
+
+Available after computing weather enrichment on the Data tab. Select variables from the picker to add timeline and correlation charts for temperature, precipitation, wind speed, air quality, and more.
+
+### Elevation
+
+Available after computing elevation enrichment. Shows elevation distribution and detection-vs-elevation correlation charts.
+
+---
+
+## Data Enrichment
+
+On the **Data** tab, the Enrich section lets you add environmental context to your data. Each enrichment source creates a new table that is joined to your detection data for analysis.
+
+### Available Sources
+
+| Source | Type | What It Adds |
+|--------|------|-------------|
+| **Weather** | Daily, per location | Temperature, precipitation, humidity, wind, cloud cover, pressure, solar radiation |
+| **Air Quality** | Daily, per location | AQI (US/EU), PM2.5, PM10, O3, NO2, SO2, CO (bundled with weather) |
+| **Elevation** | Static, per location | Elevation in meters (90m SRTM data, computed locally) |
+
+### How Enrichment Works
+
+1. Click **Compute** on an enrichment card
+2. Weft extracts the unique locations and date range from your data
+3. Data is fetched (from API or local library) and stored as a new table
+4. Progress is shown in real-time with a cancel button
+5. Once computed, environment charts and advisor access become available
+
+Enrichment tables are named with a prefix (e.g., `_weather_detections`, `_elevation_detections`) and are visible in the Data tab.
+
+---
+
+## AI Advisor
+
+The AI Advisor lets you ask natural-language questions about your dataset. It can write and execute SQL queries, create charts, run Python analysis, and save results as new tables.
+
+### What You Can Ask
+
+- Summarize my data — counts, date ranges, top categories
+- Compare detection rates between locations or time periods
+- Create charts — bar, line, scatter, histogram, heatmap
+- Run statistical tests — correlations, trends, seasonality
+- Cross-reference with enrichment data (weather, elevation)
+- Save query results as new tables for further analysis
+
+### Artifact Cards
+
+Advisor results are shown as interactive artifact cards:
+
+- **Table cards** — Query results with copy SQL, download CSV, collapsible SQL view
+- **Chart cards** — Interactive Plotly charts with CSV data download, PNG export, dark/light theme
+- **Code cards** — Python code with copy, download as .py file, stdout and result display
+
+### Tips
+
+- Be specific — "Show monthly detection counts by species for 2024" works better than "analyze my data"
+- The advisor sees your table schema, enrichment tables, and column types
+- Use the theme toggle (sun/moon icon) to switch advisor charts between dark and light themes
+- Saved tables appear in the Data tab and can be used in future queries
+
+---
+
+## Combining Data
+
+On the Data tab, use **Combine** to merge multiple tables:
+
+- **Union** — Stack tables with matching columns (e.g., combine detection CSVs from multiple deployments)
+- **Join** — Link tables on shared key columns (e.g., add metadata to detections)
+
+Combined data is created as a view. The original tables remain unchanged.
+
+---
 
 # Warp Quick Start Guide
 
