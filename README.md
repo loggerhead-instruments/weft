@@ -42,7 +42,9 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 - Create sorting, training, and processing projects
 - Label audio with spectrogram viewer and playback
 - Train PyTorch classifiers with live training charts
-- Batch-process audio files and export detection CSVs
+- Batch-process audio files with classification or acoustic analysis
+- Acoustic metrics: RMS, Peak, SEL, Spectral Entropy, ACI, Kurtosis, 1/3-octave bands
+- Optional calibration for absolute SPL (dB re 1 uPa or dB re 20 uPa)
 - GBIF-standardized species labels
 
 ### Weft Workspace
@@ -50,7 +52,7 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 - Interactive map view with dots, heatmap, and hexbin layers
 - Timeline, category, numeric distribution, and day-hour heatmap charts
 - Data table with virtual scrolling
-- Environmental data enrichment (weather, air quality, elevation)
+- Environmental data enrichment (weather, air quality, elevation, acoustic metrics)
 - AI-powered analysis advisor with natural language queries
 - Aggregation by any numeric column with SUM, AVG, MAX, MIN
 - Year-over-year comparison mode
@@ -198,15 +200,24 @@ After training, the confusion matrix shows you exactly where the model succeeds 
 
 ## 3. Processing Audio
 
-Create a **Processing Project** to run a trained model on new, unlabeled recordings.
+Create a **Processing Project** to run batch analysis on audio recordings. There are two processing modes:
+
+- **Classification** — Run a trained model to identify species/sound categories in recordings
+- **Acoustic Analysis** — Compute acoustic metrics (no model required) for soundscape characterization
 
 ### Setup
 
 1. Click **New Processing Project**
-2. **Select a model** from one of your training projects
-3. **Select the input folder** containing audio files to classify
+2. **Select the input folder** containing audio files
+3. **Choose a processing mode** at the top of the Process tab
 
-### Processing Settings
+---
+
+### Classification Mode
+
+Runs a trained neural network on your audio files to identify and classify sounds.
+
+**Setup:** Select a model from your training projects.
 
 | Setting | Default | What It Does |
 |---------|---------|-------------|
@@ -216,7 +227,9 @@ Create a **Processing Project** to run a trained model on new, unlabeled recordi
 | **Save chunks** | Off | Optionally save WAV clips of detected sounds |
 | **Consecutive detections** | 1 | Require N chunks in a row with the same label before reporting a detection |
 
-### Consecutive Detections
+You can optionally enable **Acoustic Metrics** to compute acoustic measurements alongside classification. When enabled, each detection row includes all acoustic metric columns in addition to the predicted category and confidence.
+
+#### Consecutive Detections
 
 When processing with overlapping chunks, you can require multiple consecutive chunks to predict the same label before reporting a detection. This reduces false positives by confirming that a signal persists across overlapping windows.
 
@@ -242,16 +255,71 @@ Chunks:  [whale] [noise] [whale] [whale] [noise]
 Result:  5 detections (every chunk reported as-is, no filtering)
 ```
 
+---
+
+### Acoustic Analysis Mode
+
+Computes acoustic metrics on audio files without any classification model. Use this for soundscape characterization, noise level monitoring, or baseline environmental acoustic surveys.
+
+**No model required** — select an input folder and start analysis.
+
+| Setting | Default | What It Does |
+|---------|---------|-------------|
+| **Window mode** | Per chunk | How audio is windowed: per chunk, per file, or custom duration |
+| **Window duration** | 3.0 s | Analysis window length (for chunk and custom modes) |
+| **Step size** | 100% | Window overlap. 100% = no overlap, 50% = each moment analyzed twice |
+| **Sample rate** | 48000 Hz | Target sample rate for loading audio |
+
+#### Metrics Computed
+
+All metrics are always computed for every analysis window:
+
+| Metric | Description |
+|--------|-------------|
+| **RMS level** | Root-mean-square amplitude level |
+| **Peak level** | Maximum sample amplitude |
+| **SEL** | Sound Exposure Level — total acoustic energy in the window |
+| **Spectral Entropy** | Normalized 0–1. Low = tonal signal, high = broadband noise |
+| **ACI** | Acoustic Complexity Index (Pieretti et al. 2011) — temporal variability of spectral amplitudes |
+| **Kurtosis** | Excess kurtosis of waveform amplitude. High = impulsive signal |
+| **1/3-Octave Band Levels** | ISO 266 center frequencies from 25 Hz up to Nyquist, dynamically generated based on sample rate. Supports sample rates up to 400 kHz+ |
+
+#### Custom Frequency Bands
+
+Add custom frequency bands to measure energy in specific ranges (e.g., a species chorus frequency band). Each band produces a column like `band_chorus_db`.
+
+#### Calibration (Optional)
+
+Without calibration, all levels are in **dBFS** (decibels relative to full scale). With calibration, levels are converted to absolute **Sound Pressure Level (SPL)**:
+
+| Setting | Description |
+|---------|-------------|
+| **Sensitivity** | End-to-end sensitivity in dBFS/Pa (e.g., -170 for a typical hydrophone) |
+| **Recorder Gain** | System gain in dB. Auto-extracted from filename for Loggerhead recorders |
+| **Medium** | Underwater (dB re 1 uPa) or Air (dB re 20 uPa) |
+
+**Loggerhead recorders:** Gain is automatically extracted from the filename pattern (e.g., `20230615T143022_1234565678_24.0dB_3.7V_ver1.0.wav` → 24.0 dB gain).
+
+**Calibration formula:** `SPL = dBFS - sensitivity - gain`
+
+---
+
 ### Output
 
-Processing produces a **CSV file** with one row per detection:
+Both modes produce results that can be imported directly into Weft for analysis.
 
+**Classification output** — one row per detection:
 - Timestamp and file path
-- Detected species/category
-- Confidence score (0–100%)
+- Detected species/category and confidence score (0–100%)
 - Duration and offset within the source file
+- Acoustic metrics (if enabled)
 
-This CSV follows the observation schema used by Weft's analysis workspace — you can import it directly for mapping, charting, and statistical analysis.
+**Acoustic Analysis output** — one row per analysis window:
+- Timestamp, filename, and file path
+- Window index, start time, and duration
+- All acoustic metric columns (RMS, peak, SEL, entropy, ACI, kurtosis, 1/3-octave bands)
+
+Acoustic metric columns are automatically recognized as numeric variables when imported into Weft, making them immediately available for histograms, correlation analysis, box plots, timeline charts, and map visualization.
 
 ---
 
@@ -514,6 +582,9 @@ On the **Data** tab, the Enrich section lets you add environmental context to yo
 | **Weather** | Daily, per location | Temperature, precipitation, humidity, wind, cloud cover, pressure, solar radiation |
 | **Air Quality** | Daily, per location | AQI (US/EU), PM2.5, PM10, O3, NO2, SO2, CO (bundled with weather) |
 | **Elevation** | Static, per location | Elevation in meters (90m SRTM data, computed locally) |
+| **Acoustic Metrics** | Per file or custom window | RMS, Peak, SEL, Entropy, ACI, Kurtosis, 1/3-octave bands from audio files |
+
+**Acoustic Metrics enrichment** requires a `filepath` column pointing to the original audio files. This is useful for re-computing acoustic metrics on existing data at a different temporal resolution than the original processing (e.g., per-file instead of per-chunk).
 
 ### How Enrichment Works
 
@@ -567,13 +638,17 @@ There is no way to undelete a project in the app. However, since the files remai
 ## Project Relationships
 
 ```
-Sorting Project(s)  →  Training Project  →  Processing Project
-   (labeled audio)      (trained model)      (batch classification)
+Sorting Project(s)  →  Training Project  →  Processing Project (Classification)
+   (labeled audio)      (trained model)      (batch classification + optional acoustic metrics)
+
+Audio Files  →  Processing Project (Acoustic Analysis)
+                (no model required — computes acoustic metrics only)
 ```
 
 - One training project can pull from multiple sorting projects
 - One trained model can be used in multiple processing projects
-- Processing output (CSV) can be imported into Weft for analysis
+- Acoustic analysis projects require no trained model — just audio files
+- Processing output from either mode can be imported into Weft for analysis
 
 ---
 
