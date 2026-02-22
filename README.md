@@ -5,7 +5,7 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 **Weft** is built around three workspaces:
 
 - **Warp** — Audio labeling, model training, and batch processing for bioacoustic classification
-- **Weft** — Data analysis and visualization for acoustic monitoring and environmental data *(coming soon)*
+- **Weft** — Data analysis and visualization for acoustic monitoring and environmental data
 - **Weave** — Reports, posters, and interactive data stories *(coming later)*
 
 ## Download
