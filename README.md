@@ -686,7 +686,7 @@ Organized by type:
 
 Deleting a project is a **soft delete** — it removes the project from the app but leaves all files on disk. To free up disk space, you need to manually delete the project folder from `~/WeftProjects`.
 
-**Exception:** Imported data (e.g., CSVs imported into a Weft analysis project) is **hard deleted** when the project is deleted. If you need to keep imported data, back it up before deleting the project.
+**Exception:** Deleting an imported data table within a Weft analysis project is a **hard delete** — the imported data is permanently removed. If you need to keep imported data, back it up before deleting the table. Deleting the Weft project itself leaves imported data tables intact on disk.
 
 There is no way to undelete a project in the app. However, since the files remain on disk, you can import them into a new project if a project was accidentally deleted.
 
