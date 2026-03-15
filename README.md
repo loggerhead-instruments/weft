@@ -1,11 +1,11 @@
-# Weft
+# Weft (Free Beta)
 
-Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic classifiers, analyze millions of detections with maps and charts, and create publication-ready reports. Local-first — your data stays on your machine.
+Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic classifiers, analyze millions of detections with maps and charts, and create publication-ready reports. Local-first — your data stays on your machine. Weft is currently in **free beta** — all features are available at no cost while we refine the experience.
 
 **Weft** is built around three workspaces:
 
 - **Warp** — Audio labeling, model training, and batch processing for bioacoustic classification
-- **Weft** — Data analysis and visualization for acoustic monitoring and environmental data
+- **Weft** — Data analysis and visualization for acoustic monitoring and environmental data *(coming soon)*
 - **Weave** — Reports, posters, and interactive data stories *(coming later)*
 
 ## Download
@@ -41,7 +41,8 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 ### Warp Workspace
 - Create sorting, training, and processing projects
 - Label audio with spectrogram viewer and playback
-- Train PyTorch classifiers with live training charts
+- Train PyTorch classifiers (EfficientNet-B0 or EdgeNet) with live training charts
+- Export models to ONNX or TFLite (INT8) for edge deployment
 - Batch-process audio files with classification or acoustic analysis
 - Acoustic metrics: RMS, Peak, SEL, Spectral Entropy, ACI, Kurtosis, 1/3-octave bands
 - Optional calibration for absolute SPL (dB re 1 uPa or dB re 20 uPa)
@@ -52,8 +53,8 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 - Interactive map view with dots, heatmap, and hexbin layers
 - Timeline, category, numeric distribution, and day-hour heatmap charts
 - Data table with virtual scrolling
-- Environmental data enrichment (weather, air quality, elevation, acoustic metrics)
-- AI-powered analysis advisor with natural language queries
+- Environmental data enrichment (weather, air quality, elevation, tides, ocean variables)
+- AI-powered analysis advisor with natural language queries (coming)
 - Aggregation by any numeric column with SUM, AVG, MAX, MIN
 - Year-over-year comparison mode
 - Six colorblind-safe palettes with per-category color customization
@@ -128,6 +129,27 @@ Adjust the spectrogram view to see your signals clearly:
 
 These display settings are independent of the training spectrogram settings.
 
+### Haikubox Integration (Remote Audio)
+
+If you have a [Haikubox](https://haikubox.com) bird monitor, you can label detections directly from your device without downloading files manually.
+
+**Setup:**
+1. Go to **Settings** and add your Haikubox account using the API key from [listen.haikubox.com](https://listen.haikubox.com)
+2. In a Sorting Project, click **Haikubox Source** and select your account, device, species, and date range
+3. Audio is streamed on demand — files are downloaded to a local cache as you sort
+
+**How it works:**
+- Weft queries your Haikubox device's detection history for the selected species and date range
+- Audio clips are prefetched in batches of 10 for smooth labeling with no wait between files
+- Spectrogram display, playback, chunking, and keyboard shortcuts all work identically to local files
+- Labeled clips are saved to your sorting project's category folders as local WAV/FLAC files
+- Progress is tracked per species and device — resume where you left off in a later session
+
+**Supported workflows:**
+- Label Haikubox detections to build training datasets for custom classifiers
+- Review and verify automated detections by species
+- Mix Haikubox remote sources with local audio folders in the same sorting project
+
 ### Reviewing Your Labels
 
 Switch to **Library** mode to review what you've sorted:
@@ -164,19 +186,37 @@ These control how audio is converted to images for the neural network. The defau
 
 **Tip:** Preview a spectrogram before training to make sure your signal is visible and fills a reasonable portion of the image.
 
-### Training Settings
+### Architecture
 
-All models use **EfficientNet-B0**, a proven architecture for image classification. The defaults are a good starting point:
+Two neural network architectures are available:
+
+| Architecture | Parameters | Description |
+|-------------|-----------|-------------|
+| **EfficientNet-B0** | 4.0M | Pretrained on ImageNet and fine-tuned on your spectrograms. Best accuracy for most use cases. Default learning rate: 0.00002 |
+| **EdgeNet** | 2.8M | Xception-style architecture trained from scratch. Smaller model, better suited for edge deployment (ESP32-S3 via TFLite). Default learning rate: 0.001 |
+
+When you switch architectures, the learning rate and early stopping patience are automatically adjusted.
+
+### Training Settings
 
 | Setting | Default | What It Does |
 |---------|---------|-------------|
 | **Epochs** | 50 | Number of passes through the training data. More epochs = more learning time, but diminishing returns after the model converges |
 | **Batch Size** | 32 | Samples processed at once. Reduce to 16 if you run low on memory |
-| **Learning Rate** | 0.0002 | How aggressively the model updates. Too high = unstable, too low = slow. The default is well-tuned |
+| **Learning Rate** | Auto | Automatically set per architecture (0.00002 for EfficientNet, 0.001 for EdgeNet). Can be overridden manually |
+| **Patience** | 5 / 15 | Epochs without validation improvement before early stopping. 5 for EfficientNet, 15 for EdgeNet |
 | **Min Specs per Class** | 10 | Categories with fewer samples are excluded from training |
 | **Max Files per Class** | 0 (unlimited) | Cap samples per category. Useful if one category vastly outnumbers others |
 | **Augment** | On | Randomly varies spectrograms during training to improve generalization |
-| **Balance Method** | Weighted Loss | How to handle unequal category sizes. Weighted loss penalizes errors on rare categories more heavily |
+| **Balance Method** | Weighted Loss | How to handle unequal category sizes (see below) |
+
+### Class Balance Methods
+
+| Method | Description |
+|--------|-------------|
+| **Weighted Loss** | Adjusts the loss function to penalize errors on rare categories more heavily, proportional to the inverse of class frequency. All samples are used, but the model pays more attention to underrepresented classes. Best for most cases |
+| **Balanced Sampling** | Oversamples rare categories during training so the model sees each class roughly equally often. Useful when rare classes have distinctive features that get drowned out by larger classes |
+| **None** | No class balancing. Categories with more samples will have more influence. Only use when categories are already roughly equal in size |
 
 ### Start Training
 
@@ -333,13 +373,14 @@ Acoustic metric columns are automatically recognized as numeric variables when i
 
 ### Get Enough Labels
 
-- **Aim for at least 100 samples per category.** More is better, but 100 is a practical minimum for reliable training.
-- **10 samples** is the absolute floor (set by min_specs_per_class). The model will train but won't generalize well.
+
+- **Aim for at least 1,000 samples per category.** More is better. Background/noise categories can have significantly more — 5,000+ is fine and helps the model learn what is NOT a signal.
+- **Use multiple locations if possible.** Training on data from a single site often produces a model that only works well at that site. Including recordings from different locations, microphones, and ambient conditions greatly improves generalization.
 - **Imbalanced categories are OK** — the weighted loss function handles this. But try to avoid extreme ratios (1000:10).
 
 ### Choose the Right Clip Duration
 
-- **The clip should be long enough to show your complete signal.** A 3-second clip works for most bird calls. Whale songs may need 10–30 seconds. Bat echolocation may only need 0.5 seconds.
+- **The clip should be long enough to show your complete signal.** A 3-second clip works for most bird calls. Whale songs may need 10–30 seconds. Bat echolocation may only need 1 second.
 - **The clip should be short enough that the signal fills a meaningful portion of the spectrogram.** A 0.1-second bird chirp in a 30-second spectrogram will be invisible to the model.
 - **Match your processing chunk duration to your training clip duration.**
 
@@ -397,6 +438,21 @@ Go to the **Data** tab and click **Import**. Supported formats:
 - **Parquet** — Columnar binary format (fast, compact)
 - **JSON / NDJSON** — Newline-delimited JSON records
 - **DuckDB** — Import tables from another DuckDB database
+
+### Syncing Haikubox Data
+
+If you have a [Haikubox](https://haikubox.com) bird monitor, you can sync your detection data directly into a Weft project for analysis.
+
+1. Go to **Settings** and add your Haikubox account (API key from account page on [listen.haikubox.com](https://listen.haikubox.com))
+2. On the **Data** tab, click **Haikubox Sync**
+3. Select an account, choose devices, and set a date range
+4. Click **Sync** — detections stream into a DuckDB table with real-time progress
+
+**Features:**
+- Syncs all detection fields: species, datetime, location, confidence score, detection count
+- Incremental sync — only fetches new data since the last sync
+- Device metadata is synced separately and auto-joined so station names appear in your data
+- Column mapping is auto-configured — maps, charts, and environment tabs work immediately after sync
 
 ### Column Mapping
 
@@ -581,10 +637,9 @@ On the **Data** tab, the Enrich section lets you add environmental context to yo
 |--------|------|-------------|
 | **Weather** | Daily, per location | Temperature, precipitation, humidity, wind, cloud cover, pressure, solar radiation |
 | **Air Quality** | Daily, per location | AQI (US/EU), PM2.5, PM10, O3, NO2, SO2, CO (bundled with weather) |
+| **Tides** | Sub-daily (6-min), per location | Observed & predicted water level, tidal slope, daily tidal range (NOAA CO-OPS; free, coastal locations within 100 km of a tide station) |
+| **Ocean** | Daily, per location | Sea surface temperature & anomaly, chlorophyll-a, wave height/direction/period, swell height/direction/period (NOAA ERDDAP + Visual Crossing; paid tier) |
 | **Elevation** | Static, per location | Elevation in meters (90m SRTM data, computed locally) |
-| **Acoustic Metrics** | Per file or custom window | RMS, Peak, SEL, Entropy, ACI, Kurtosis, 1/3-octave bands from audio files |
-
-**Acoustic Metrics enrichment** requires a `filepath` column pointing to the original audio files. This is useful for re-computing acoustic metrics on existing data at a different temporal resolution than the original processing (e.g., per-file instead of per-chunk).
 
 ### How Enrichment Works
 
@@ -631,6 +686,8 @@ Organized by type:
 
 Deleting a project is a **soft delete** — it removes the project from the app but leaves all files on disk. To free up disk space, you need to manually delete the project folder from `~/WeftProjects`.
 
+**Exception:** Imported data (e.g., CSVs imported into a Weft analysis project) is **hard deleted** when the project is deleted. If you need to keep imported data, back it up before deleting the project.
+
 There is no way to undelete a project in the app. However, since the files remain on disk, you can import them into a new project if a project was accidentally deleted.
 
 ---
@@ -658,5 +715,7 @@ Audio Files  →  Processing Project (Acoustic Analysis)
 - [Request a Feature](https://github.com/loggerhead-instruments/weft/issues/new?template=feature_request.md)
 
 ---
+
+[Privacy Policy](https://github.com/loggerhead-instruments/weft/blob/main/PRIVACY.md) · [Terms of Service](https://github.com/loggerhead-instruments/weft/blob/main/TERMS.md)
 
 © 2026 Loggerhead Instruments
