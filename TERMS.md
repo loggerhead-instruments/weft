@@ -49,7 +49,7 @@ You are responsible for backing up your data. We are not liable for data loss re
 
 ## 5. Third-Party Services
 
-Weft integrates with third-party services including Haikubox, Visual Crossing, and Open-Meteo. Your use of these services through Weft is subject to their respective terms of service. We are not responsible for the availability, accuracy, or terms of third-party services.
+Weft integrates with third-party services including Haikubox, Visual Crossing, NOAA, Anthropic, and Supabase. Your use of these services through Weft is subject to their respective terms of service. We are not responsible for the availability, accuracy, or terms of third-party services.
 
 ## 6. Haikubox Integration
 
@@ -74,6 +74,8 @@ WE DO NOT WARRANT THAT:
 - RESULTS OBTAINED FROM THE APPLICATION WILL BE ACCURATE OR RELIABLE
 - TRAINED MODELS WILL PERFORM TO ANY PARTICULAR STANDARD
 - DEFECTS WILL BE CORRECTED
+
+WEFT RELIES ON THIRD-PARTY OPEN-SOURCE LIBRARIES AND PACKAGES. WE ARE NOT LIABLE FOR ANY ERRORS, BUGS, INCOMPATIBILITIES, OR DAMAGES ARISING FROM THESE THIRD-PARTY DEPENDENCIES. YOU ACKNOWLEDGE THAT SOFTWARE MAY CONTAIN DEFECTS AND THAT USE OF THE APPLICATION FOR CRITICAL DECISION-MAKING IS AT YOUR OWN RISK.
 
 ## 9. Limitation of Liability
 
