@@ -54,7 +54,7 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 - Timeline, category, numeric distribution, and day-hour heatmap charts
 - Data table with virtual scrolling
 - Environmental data enrichment (weather, air quality, elevation, tides, ocean variables)
-- AI-powered analysis advisor with natural language queries (coming)
+- AI-powered analysis advisor with natural language queries (requires subscription)
 - Aggregation by any numeric column with SUM, AVG, MAX, MIN
 - Year-over-year comparison mode
 - Six colorblind-safe palettes with per-category color customization
