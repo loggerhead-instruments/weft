@@ -12,8 +12,7 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 
 | Platform | Download |
 |----------|----------|
-| macOS — Apple Silicon (M1/M2/M3/M4/M5) | [Latest .dmg](https://github.com/loggerhead-instruments/weft/releases/latest) (the file *without* `_x64` in the name) |
-| macOS — Intel | [Latest .dmg](https://github.com/loggerhead-instruments/weft/releases/latest) (the file with `_x64` in the name) |
+| macOS — Apple Silicon (M1/M2/M3/M4/M5) | [Latest .dmg](https://github.com/loggerhead-instruments/weft/releases/latest) |
 | Windows | [Latest .exe](https://github.com/loggerhead-instruments/weft/releases/latest) |
 | Linux — AppImage (auto-update supported) | [Latest .AppImage](https://github.com/loggerhead-instruments/weft/releases/latest) |
 | Linux — Debian / Ubuntu | [Latest .deb](https://github.com/loggerhead-instruments/weft/releases/latest) |
@@ -21,12 +20,12 @@ Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic cla
 Every link goes to the latest release page — pick the matching file under **Assets** at the bottom.
 
 > **Notes:**
-> - Model **training** is dramatically faster on Apple Silicon (MPS), discrete NVIDIA GPUs, or modern x86_64 CPUs. Intel Macs and low-RAM machines can run training but it will be slow — sorting, reviewing, and running inference are fine.
+> - macOS builds require an Apple Silicon Mac (M1/M2/M3/M4/M5). Intel Macs are not supported.
 > - Linux builds target x86_64 with glibc ≥ 2.35 (Ubuntu 22.04+, Debian 12+, Fedora 36+).
 
 ## System Requirements
 
-- macOS 11+ (Apple Silicon or Intel), Windows 10+, or x86_64 Linux (glibc ≥ 2.35)
+- macOS 11+ (Apple Silicon only), Windows 10+, or x86_64 Linux (glibc ≥ 2.35)
 - [Anaconda](https://www.anaconda.com/download) (free)
 - 16 GB RAM minimum, 32 GB recommended (training)
 - 4 GB disk space (including Python environment)
@@ -36,8 +35,7 @@ Every link goes to the latest release page — pick the matching file under **As
 1. **Install Anaconda** — download the graphical installer from [anaconda.com/download](https://www.anaconda.com/download) and follow the setup wizard. If you already have Anaconda or Miniconda installed, skip this step.
 
 2. **Install Weft** — download the installer for your platform from the [latest release](https://github.com/loggerhead-instruments/weft/releases/latest).
-   - **macOS (Apple Silicon)**: Open `Weft_*.dmg` (no `_x64`) and drag Weft to your Applications folder.
-   - **macOS (Intel)**: Open `Weft_*_x64.dmg` and drag Weft to your Applications folder.
+   - **macOS (Apple Silicon)**: Open the `.dmg` and drag Weft to your Applications folder.
    - **Windows**: Run the `.exe` installer.
    - **Linux — AppImage** (recommended): `chmod +x Weft_*.AppImage`, then run it.
    - **Linux — Debian/Ubuntu**: `sudo apt install ./Weft_*.deb`.
