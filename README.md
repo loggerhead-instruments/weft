@@ -1,14 +1,14 @@
 # Weft (Free Beta)
 
-Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic classifiers, analyze millions of detections with maps and charts, and turn the results into figures, papers and posters. Local-first — your data stays on your machine. Weft is currently in **free beta** — all features are available at no cost while we refine the experience.
+Weft is a desktop app for working with sound recordings from the field. Train a classifier on your own recordings, run it (or BirdNET or HaikuNet) over new recordings, look at the detections on maps and charts, and make figures, papers and posters from what you find. Everything runs on your own machine. Weft is in **free beta** — all features are free while we work out the rough edges.
 
-Work in Weft is organised by **study** — a site, a species, a season. A study has five stages, in the order work happens:
+Your work is organised into studies. A study is whatever you are working on — a site, a species, a season — and it has five parts:
 
-- **Libraries** — recordings labeled by class, the training material
-- **Models** — classifiers trained on a library
-- **Runs** — recordings processed with a model you trained, a community model, or the built-in BirdNET and HaikuNet; or acoustic metrics without any model
-- **Analyses** — detections and sensor data on maps and charts, with environmental context and an AI advisor
-- **Documents** — figures saved from any chart or map, assembled into papers and posters *(new — feedback welcome, bugs included)*
+- **Libraries** — recordings you have sorted into categories. This is what models are trained on.
+- **Models** — classifiers you train on a library.
+- **Runs** — new recordings processed with a model (yours, a community model, or the built-in BirdNET and HaikuNet), or just acoustic metrics with no model.
+- **Analyses** — detections and sensor data on maps and charts, with weather, tides, sun and moon, and an AI advisor.
+- **Documents** — figures saved from charts and maps, put together into papers and posters. *New — tell us what breaks.*
 
 ## Download
 
@@ -49,46 +49,47 @@ Every link goes to the latest release page — pick the matching file under **As
 ## What's Included (Free Beta)
 
 ### Studies
-- Home lists every study with what it holds; a study page shows its five stages, and the top bar switches between them
-- Starting from nothing asks one question — what are you working on? — and the first library, model project and run project take the study's name
-- A second one of a kind is a variant: say what is different, and the list shows it. **Duplicate** copies a project's setup and records its parent
+- Home shows all your studies. Open one and you see its five parts; the top bar moves between them.
+- When you start a new study, Weft asks what you are working on and uses that name for your first library, model and run.
+- Make a second library (or model, or run) in the same study and Weft asks what is different about it, then shows that in the list.
+- Duplicate copies a project's settings, not its data, and remembers which project it came from.
 
 ### Libraries, Models and Runs
-- Label audio with spectrogram viewer and playback, from local folders or a Haikubox
-- Train classifiers (EfficientNet-B0, EfficientNet-Lite, EdgeNet) with live training charts
-- Export models to ONNX or TFLite (INT8) for edge deployment; publish to the community
-- Batch-process audio with your model or a community model
-- Built-in BirdNET and HaikuNet: analyze bird recordings with no training at all, and ask either for a second opinion on any detection in Review
-- Acoustic metrics without a model: RMS, Peak, SEL, Spectral Entropy, ACI, Kurtosis, 1/3-octave bands
-- Optional calibration for absolute SPL (dB re 1 uPa or dB re 20 uPa)
-- GBIF-standardized species labels
+- Sort audio into categories with a spectrogram viewer and playback, from folders on disk or straight from a Haikubox
+- Train classifiers (EfficientNet-B0, EfficientNet-Lite, EdgeNet) and watch the training curves as they go
+- Export models to ONNX or TFLite (INT8) to run on small devices; share them with other Weft users
+- Run your model, or a community model, over folders of recordings
+- BirdNET and HaikuNet are built in: identify birds in your recordings with no training, or get a second opinion on any detection in Review
+- Acoustic metrics with no model: RMS, peak, SEL, spectral entropy, ACI, kurtosis, 1/3-octave bands
+- Calibrate to absolute sound levels (dB re 1 µPa or dB re 20 µPa)
+- Species names follow GBIF
 
 ### Analyses
-- Pick this study's runs directly, or import CSV, Parquet, NDJSON, JSON, and DuckDB files
-- Interactive map view with dots, heatmap, and hexbin layers
-- Timeline, category, numeric distribution, and day-hour heatmap charts
-- Data table with virtual scrolling
-- Environmental data enrichment (weather, air quality, elevation, tides, ocean variables)
-- AI-powered analysis advisor with natural language queries (requires subscription)
-- Aggregation by any numeric column with SUM, AVG, MAX, MIN
-- Year-over-year comparison mode
-- Six colorblind-safe palettes with per-category color customization
-- Dark/light chart themes for print-ready output
+- Pull in this study's runs directly, or import CSV, Parquet, NDJSON, JSON and DuckDB files
+- Map with dots, a heatmap or hexbins
+- Timeline, category, histogram and day-by-hour charts
+- A table that scrolls through millions of rows
+- Add weather, air quality, elevation, tides and ocean data for your locations
+- Ask questions in plain English with the AI advisor (subscription)
+- Total, average, max or min of any numeric column
+- Compare years side by side
+- Six colourblind-safe palettes; set colours per category
+- Dark or light charts for print
 
-### Documents *(new — feedback welcome, bugs included)*
-- Save any chart, map or spectrogram as a figure with the **+ Figure** button; edit, restyle and export it
-- Papers: an ordered set of figures with legends, ready for a submission
-- Posters: figures and text laid out on a page
+### Documents *(new — tell us what breaks)*
+- Click **+ Figure** on any chart, map or spectrogram to save it. Edit, restyle and export figures.
+- Papers: put figures in order and write the legends
+- Posters: lay out figures and text on a page
 
 # Quick Start Guide: Libraries, Models and Runs
 
-Three stages turn audio recordings into trained neural networks that can automatically classify sounds — bird calls, whale vocalizations, bat echolocation, or any acoustic signal — and run them over new recordings.
+This is how recordings become a trained classifier — for bird calls, whale sounds, bat echolocation, or anything else — and how that classifier is run over new recordings.
 
 ## Studies
 
-Everything belongs to a study. Home lists your studies; opening one shows its five stages, and the top bar switches between them. Each stage is its list; opening a project turns the page into that project, with a crumb back to the list and a menu to switch between variants.
+Everything in Weft belongs to a study. Home lists your studies. Open one and you see its five parts; the top bar moves between them. Each part starts as a list. Open a project and the page becomes that project, with a link back to the list and a menu to switch between the projects of that kind.
 
-Starting from nothing asks one question — *what are you working on?* — and the first library, model project and run project take the study's name. A second one of a kind is a variant: say what is different about it, and the list shows it. **Duplicate** makes a variant with its setup copied and its parent recorded; variants sit together as a family.
+When you start a new study, Weft asks what you are working on and uses that name for the first library, model and run you make. Make a second one of any kind and Weft asks what is different about it; that note shows in the list so you can tell them apart. Duplicate copies a project's settings without its data and remembers where it came from, so related projects stay together.
 
 
 ## Choose Your Starting Point
@@ -447,7 +448,7 @@ Each cycle produces a better model. Two or three iterations usually get you to a
 ---
 # Analysis Guide
 
-An **analysis** is where detections and other spatiotemporal data are explored. Pick up this study's runs (or import any tabular data with coordinates and timestamps), visualize on interactive maps and charts, enrich with environmental data, and explore with the AI Advisor.
+An analysis is where you look at detections, or any other data with times and places. Pull in the study's runs, or import a table with coordinates and timestamps, then look at it on maps and charts, add weather and other environmental data, and ask the AI advisor about it.
 
 ## Getting Started
 
@@ -730,10 +731,10 @@ Study
   Audio files  →  Runs (acoustic analysis — no model required)
 ```
 
-- One model project can pull from several libraries, in this study or another
-- One trained model can be used by many run projects; a run files under the study its recordings belong to
-- Acoustic analysis runs need no trained model — just audio files
-- An analysis picks up the study's runs directly; figures saved from an analysis or a model go to Documents
+- A model can be trained on more than one library, from this study or another
+- A trained model can be used in any number of runs. A run belongs to the study its recordings belong to
+- Acoustic analysis runs need no model, just recordings
+- An analysis can pull in the study's runs directly. Figures saved from an analysis or a model go to Documents
 
 ---
 
