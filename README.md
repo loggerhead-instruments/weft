@@ -52,14 +52,14 @@ Every link goes to the latest release page — pick the matching file under **As
 - Home shows all your studies. Open one and you see its five parts; the top bar moves between them.
 - When you start a new study, Weft asks what you are working on and uses that name for your first library, model and run.
 - Make a second library (or model, or run) in the same study and Weft asks what is different about it, then shows that in the list.
-- Duplicate copies a project's settings, not its data, and remembers which project it came from.
+- **Duplicate** copies a project's settings, not its data, and remembers which project it came from.
 
 ### Libraries, Models and Runs
 - Sort audio into categories with a spectrogram viewer and playback, from folders on disk or straight from a Haikubox
 - Train classifiers (EfficientNet-B0, EfficientNet-Lite, EdgeNet) and watch the training curves as they go
 - Export models to ONNX or TFLite (INT8) to run on small devices; share them with other Weft users
 - Run your model, or a community model, over folders of recordings
-- BirdNET and HaikuNet are built in: identify birds in your recordings with no training, or get a second opinion on any detection in Review
+- BirdNET and HaikuNet are built in: identify birds in your recordings with no training, or click **Second opinion** on any detection in **Review**
 - Acoustic metrics with no model: RMS, peak, SEL, spectral entropy, ACI, kurtosis, 1/3-octave bands
 - Calibrate to absolute sound levels (dB re 1 µPa or dB re 20 µPa)
 - Species names follow GBIF
@@ -89,7 +89,7 @@ This is how recordings become a trained classifier — for bird calls, whale sou
 
 Everything in Weft belongs to a study. Home lists your studies. Open one and you see its five parts; the top bar moves between them. Each part starts as a list. Open a project and the page becomes that project, with a link back to the list and a menu to switch between the projects of that kind.
 
-When you start a new study, Weft asks what you are working on and uses that name for the first library, model and run you make. Make a second one of any kind and Weft asks what is different about it; that note shows in the list so you can tell them apart. Duplicate copies a project's settings without its data and remembers where it came from, so related projects stay together.
+When you start a new study, Weft asks what you are working on and uses that name for the first library, model and run you make. Make a second one of any kind and Weft asks what is different about it; that note shows in the list so you can tell them apart. **Duplicate** copies a project's settings without its data and remembers where it came from, so related projects stay together.
 
 
 ## Choose Your Starting Point
@@ -684,7 +684,7 @@ Enrichment tables are named with a prefix (e.g., `_weather_detections`, `_elevat
 
 ## Combining Data
 
-On the Data tab, use **Combine** to merge multiple tables:
+On the **Data** tab, use **Combine** to merge multiple tables:
 
 - **Union** — Stack tables with matching columns (e.g., combine detection CSVs from multiple deployments)
 - **Join** — Link tables on shared key columns (e.g., add metadata to detections)
