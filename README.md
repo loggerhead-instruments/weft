@@ -1,12 +1,14 @@
 # Weft (Free Beta)
 
-Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic classifiers, analyze millions of detections with maps and charts, and create publication-ready reports. Local-first — your data stays on your machine. Weft is currently in **free beta** — all features are available at no cost while we refine the experience.
+Desktop app for bioacoustic and spatiotemporal data analysis. Train acoustic classifiers, analyze millions of detections with maps and charts, and turn the results into figures, papers and posters. Local-first — your data stays on your machine. Weft is currently in **free beta** — all features are available at no cost while we refine the experience.
 
-**Weft** is built around three workspaces:
+Work in Weft is organised by **study** — a site, a species, a season. A study has five stages, in the order work happens:
 
-- **Warp** — Audio labeling, model training, and batch processing for bioacoustic classification
-- **Weft** — Data analysis and visualization for acoustic monitoring and environmental data *(coming soon)*
-- **Weave** — Reports, posters, and interactive data stories *(coming later)*
+- **Libraries** — recordings labeled by class, the training material
+- **Models** — classifiers trained on a library
+- **Runs** — recordings processed with a model you trained, a community model, or the built-in BirdNET and HaikuNet; or acoustic metrics without any model
+- **Analyses** — detections and sensor data on maps and charts, with environmental context and an AI advisor
+- **Documents** — figures saved from any chart or map, assembled into papers and posters *(new — feedback welcome, bugs included)*
 
 ## Download
 
@@ -40,24 +42,29 @@ Every link goes to the latest release page — pick the matching file under **As
    - **Linux — AppImage** (recommended): `chmod +x Weft_*.AppImage`, then run it.
    - **Linux — Debian/Ubuntu**: `sudo apt install ./Weft_*.deb`.
 
-3. **First launch** — Weft will detect your Anaconda installation and set up a Python environment automatically. This takes 5-10 minutes and only happens once. You'll see a progress screen — don't close the app during setup. Sign up for Weft using your email. 
+3. **First launch** — Weft will detect your Anaconda installation and set up a Python environment automatically. This takes 5-10 minutes and only happens once. You'll see a progress screen — don't close the app during setup. Sign up for Weft using your email.
 
 4. **Subsequent launches** — the app starts in a few seconds.
 
 ## What's Included (Free Beta)
 
-### Warp Workspace
-- Create sorting, training, and processing projects
-- Label audio with spectrogram viewer and playback
-- Train PyTorch classifiers (EfficientNet-B0 or EdgeNet) with live training charts
-- Export models to ONNX or TFLite (INT8) for edge deployment
-- Batch-process audio files with classification or acoustic analysis
-- Acoustic metrics: RMS, Peak, SEL, Spectral Entropy, ACI, Kurtosis, 1/3-octave bands
+### Studies
+- Home lists every study with what it holds; a study page shows its five stages, and the top bar switches between them
+- Starting from nothing asks one question — what are you working on? — and the first library, model project and run project take the study's name
+- A second one of a kind is a variant: say what is different, and the list shows it. **Duplicate** copies a project's setup and records its parent
+
+### Libraries, Models and Runs
+- Label audio with spectrogram viewer and playback, from local folders or a Haikubox
+- Train classifiers (EfficientNet-B0, EfficientNet-Lite, EdgeNet) with live training charts
+- Export models to ONNX or TFLite (INT8) for edge deployment; publish to the community
+- Batch-process audio with your model or a community model
+- Built-in BirdNET and HaikuNet: analyze bird recordings with no training at all, and ask either for a second opinion on any detection in Review
+- Acoustic metrics without a model: RMS, Peak, SEL, Spectral Entropy, ACI, Kurtosis, 1/3-octave bands
 - Optional calibration for absolute SPL (dB re 1 uPa or dB re 20 uPa)
 - GBIF-standardized species labels
 
-### Weft Workspace
-- Import CSV, Parquet, NDJSON, JSON, and DuckDB files
+### Analyses
+- Pick this study's runs directly, or import CSV, Parquet, NDJSON, JSON, and DuckDB files
 - Interactive map view with dots, heatmap, and hexbin layers
 - Timeline, category, numeric distribution, and day-hour heatmap charts
 - Data table with virtual scrolling
@@ -68,9 +75,21 @@ Every link goes to the latest release page — pick the matching file under **As
 - Six colorblind-safe palettes with per-category color customization
 - Dark/light chart themes for print-ready output
 
-# Warp Quick Start Guide
+### Documents *(new — feedback welcome, bugs included)*
+- Save any chart, map or spectrogram as a figure with the **+ Figure** button; edit, restyle and export it
+- Papers: an ordered set of figures with legends, ready for a submission
+- Posters: figures and text laid out on a page
 
-Warp is the training workspace in Weft. It turns audio recordings into trained neural networks that can automatically classify sounds — bird calls, whale vocalizations, bat echolocation, or any acoustic signal.
+# Quick Start Guide: Libraries, Models and Runs
+
+Three stages turn audio recordings into trained neural networks that can automatically classify sounds — bird calls, whale vocalizations, bat echolocation, or any acoustic signal — and run them over new recordings.
+
+## Studies
+
+Everything belongs to a study. Home lists your studies; opening one shows its five stages, and the top bar switches between them. Each stage is its list; opening a project turns the page into that project, with a crumb back to the list and a menu to switch between variants.
+
+Starting from nothing asks one question — *what are you working on?* — and the first library, model project and run project take the study's name. A second one of a kind is a variant: say what is different about it, and the list shows it. **Duplicate** makes a variant with its setup copied and its parent recorded; variants sit together as a family.
+
 
 ## Choose Your Starting Point
 
@@ -82,22 +101,22 @@ Warp is the training workspace in Weft. It turns audio recordings into trained n
 
 ## 1. Labeling Audio
 
-Create a **Sorting Project** to organize your audio files into categories (species, call types, noise, etc.).
+Open **Libraries** and start a library: your audio files sorted into categories (species, call types, noise, etc.).
 
 ### Setup
 
-There are two ways to start a sorting project:
+There are two ways to start a library:
 
 **Option A: Start from raw audio**
-1. Click **New Sorting Project** and give it a name
+1. In **Libraries**, click **+ New** — the first library takes the study's name
 2. Point it at your folder of audio files
 3. Add categories from the standardized list (e.g., `Megaptera novaeangliae`, `SYS_anthropogenic`, `SYS_unknown`)
 4. Sort files one by one using the sorting interface
 
 **Option B: Import pre-sorted audio**
-1. Click **New Sorting Project** and give it a name
+1. In **Libraries**, click **+ New** — the first library takes the study's name
 2. Point it at a folder where audio files are already organized into subfolders named by category
-3. Warp imports the folder structure — subfolder names are automatically mapped to standardized GBIF and system category names
+3. Weft imports the folder structure — subfolder names are automatically mapped to standardized GBIF and system category names
 
 ### Category Names
 
@@ -123,7 +142,7 @@ Each file loads with a spectrogram display and audio playback:
 If your recordings are long (minutes to hours), enable **chunking** to split them into shorter segments:
 
 - Set a **chunk duration** (e.g., 3 seconds) that's long enough to see your signal of interest
-- Warp will step through the file chunk by chunk
+- Weft will step through the file chunk by chunk
 - Each chunk you label gets saved as its own WAV file in the category folder
 
 ### Spectrogram Display Settings
@@ -143,20 +162,20 @@ If you have a [Haikubox](https://haikubox.com) bird monitor, you can label detec
 
 **Setup:**
 1. Go to **Settings** and add your Haikubox account using the API key from [listen.haikubox.com](https://listen.haikubox.com)
-2. In a Sorting Project, click **Haikubox Source** and select your account, device, species, and date range
+2. In a library, click **Haikubox Source** and select your account, device, species, and date range
 3. Audio is streamed on demand — files are downloaded to a local cache as you sort
 
 **How it works:**
 - Weft queries your Haikubox device's detection history for the selected species and date range
 - Audio clips are prefetched in batches of 10 for smooth labeling with no wait between files
 - Spectrogram display, playback, chunking, and keyboard shortcuts all work identically to local files
-- Labeled clips are saved to your sorting project's category folders as local WAV/FLAC files
+- Labeled clips are saved to your library's category folders as local WAV/FLAC files
 - Progress is tracked per species and device — resume where you left off in a later session
 
 **Supported workflows:**
 - Label Haikubox detections to build training datasets for custom classifiers
 - Review and verify automated detections by species
-- Mix Haikubox remote sources with local audio folders in the same sorting project
+- Mix Haikubox remote sources with local audio folders in the same library
 
 ### Reviewing Your Labels
 
@@ -171,12 +190,12 @@ Switch to **Library** mode to review what you've sorted:
 
 ## 2. Training a Model
 
-Create a **Training Project** to build a neural network from your labeled audio.
+Open **Models** and create a model project to build a neural network from your labeled audio.
 
 ### Setup
 
-1. Click **New Training Project**
-2. **Add a data source** — link to your sorting project(s) containing labeled audio
+1. In **Models**, click **+ New**
+2. **Add a data source** — link to the library (or libraries) with your labeled audio; another study's libraries are offered too
 3. Select which categories to include in training
 
 ### Spectrogram Settings
@@ -248,16 +267,16 @@ After training, the confusion matrix shows you exactly where the model succeeds 
 
 ## 3. Processing Audio
 
-Create a **Processing Project** to run batch analysis on audio recordings. There are two processing modes:
+Open **Runs** and create a run project to run batch analysis on audio recordings. There are two processing modes:
 
 - **Classification** — Run a trained model to identify species/sound categories in recordings
 - **Acoustic Analysis** — Compute acoustic metrics (no model required) for soundscape characterization
 
 ### Setup
 
-1. Click **New Processing Project**
+1. In **Runs**, click **+ New**
 2. **Select the input folder** containing audio files
-3. **Choose a processing mode** at the top of the Process tab
+3. **Choose a processing mode** at the top of the page
 
 ---
 
@@ -265,7 +284,7 @@ Create a **Processing Project** to run batch analysis on audio recordings. There
 
 Runs a trained neural network on your audio files to identify and classify sounds.
 
-**Setup:** Select a model from your training projects.
+**Setup:** Select a model — from this study's model projects first, then other studies, community models, and the built-in BirdNET and HaikuNet.
 
 | Setting | Default | What It Does |
 |---------|---------|-------------|
@@ -354,7 +373,7 @@ Without calibration, all levels are in **dBFS** (decibels relative to full scale
 
 ### Output
 
-Both modes produce results that can be imported directly into Weft for analysis.
+Both modes produce results that an analysis in the study picks up directly.
 
 **Classification output** — one row per detection:
 - Timestamp and file path
@@ -367,7 +386,7 @@ Both modes produce results that can be imported directly into Weft for analysis.
 - Window index, start time, and duration
 - All acoustic metric columns (RMS, peak, SEL, entropy, ACI, kurtosis, 1/3-octave bands)
 
-Acoustic metric columns are automatically recognized as numeric variables when imported into Weft, making them immediately available for histograms, correlation analysis, box plots, timeline charts, and map visualization.
+Acoustic metric columns are automatically recognized as numeric variables in an analysis, making them immediately available for histograms, correlation analysis, box plots, timeline charts, and map visualization.
 
 ---
 
@@ -426,30 +445,30 @@ Each cycle produces a better model. Two or three iterations usually get you to a
 
 
 ---
-# Weft Analysis Guide
+# Analysis Guide
 
-Weft is the analysis workspace for spatiotemporal data. Import detection CSVs from Warp (or any tabular data with coordinates and timestamps), visualize on interactive maps and charts, enrich with environmental data, and explore with the AI Advisor.
+An **analysis** is where detections and other spatiotemporal data are explored. Pick up this study's runs (or import any tabular data with coordinates and timestamps), visualize on interactive maps and charts, enrich with environmental data, and explore with the AI Advisor.
 
 ## Getting Started
 
-### Creating a Project
+### Creating an Analysis
 
-1. Go to the **Projects** tab
-2. Click **New Project**, give it a name and choose a location
-3. The project creates a local DuckDB database to store your data
+1. Open **Analyses** in the top bar
+2. Click **New analysis**, say what it is about and choose a location
+3. The analysis creates a local DuckDB database to store your data
 
 ### Importing Data
 
-Go to the **Data** tab and click **Import**. Supported formats:
+Go to the **Data** tab. **Runs** lists this study's processing runs — pick the ones to combine, no export needed. Or click **Import** for a file:
 
-- **CSV** — Comma-separated values (most common for Warp processing output)
+- **CSV** — Comma-separated values
 - **Parquet** — Columnar binary format (fast, compact)
 - **JSON / NDJSON** — Newline-delimited JSON records
 - **DuckDB** — Import tables from another DuckDB database
 
 ### Syncing Haikubox Data
 
-If you have a [Haikubox](https://haikubox.com) bird monitor, you can sync your detection data directly into a Weft project for analysis.
+If you have a [Haikubox](https://haikubox.com) bird monitor, you can sync your detection data directly into an analysis.
 
 1. Go to **Settings** and add your Haikubox account (API key from account page on [listen.haikubox.com](https://listen.haikubox.com))
 2. On the **Data** tab, click **Haikubox Sync**
@@ -685,35 +704,36 @@ All projects are saved in your home folder under `WeftProjects` by default:
 
 Organized by type:
 
-- `WeftProjects/sorting/` — Sorting projects
-- `WeftProjects/training/` — Training projects
-- `WeftProjects/processing/` — Processing projects
-- `WeftProjects/weft/` — Weft analysis projects
+- `WeftProjects/sorting/` — Libraries
+- `WeftProjects/training/` — Model projects
+- `WeftProjects/processing/` — Run projects
+- `WeftProjects/weft/` — Analyses
 
 ### Deleting Projects
 
 Deleting a project is a **soft delete** — it removes the project from the app but leaves all files on disk. To free up disk space, you need to manually delete the project folder from `~/WeftProjects`.
 
-**Exception:** Deleting an imported data table within a Weft analysis project is a **hard delete** — the imported data is permanently removed. If you need to keep imported data, back it up before deleting the table. Deleting the Weft project itself leaves imported data tables intact on disk.
+**Exception:** Deleting an imported data table within an analysis is a **hard delete** — the imported data is permanently removed. If you need to keep imported data, back it up before deleting the table. Deleting the analysis itself leaves imported data tables intact on disk.
 
 There is no way to undelete a project in the app. However, since the files remain on disk, you can import them into a new project if a project was accidentally deleted.
 
 ---
 
-## Project Relationships
+## How the Stages Relate
 
 ```
-Sorting Project(s)  →  Training Project  →  Processing Project (Classification)
-   (labeled audio)      (trained model)      (batch classification + optional acoustic metrics)
+Study
+  Libraries  →  Models  →  Runs (classification)  →  Analyses  →  Documents
+  (labeled      (trained    (detections + optional     (maps,        (figures,
+   audio)        model)      acoustic metrics)          charts)       papers, posters)
 
-Audio Files  →  Processing Project (Acoustic Analysis)
-                (no model required — computes acoustic metrics only)
+  Audio files  →  Runs (acoustic analysis — no model required)
 ```
 
-- One training project can pull from multiple sorting projects
-- One trained model can be used in multiple processing projects
-- Acoustic analysis projects require no trained model — just audio files
-- Processing output from either mode can be imported into Weft for analysis
+- One model project can pull from several libraries, in this study or another
+- One trained model can be used by many run projects; a run files under the study its recordings belong to
+- Acoustic analysis runs need no trained model — just audio files
+- An analysis picks up the study's runs directly; figures saved from an analysis or a model go to Documents
 
 ---
 
