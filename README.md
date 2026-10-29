@@ -621,7 +621,32 @@ Six colourblind-safe palettes: Okabe-Ito, Wong, Tol Bright, Tol Muted, Set 2, Pa
 
 ### Year-over-Year Mode
 
-Turn on **Year-over-year** in the sidebar to lay each year over the others, lined up by day of year. Use it to compare seasonal patterns or arrival dates between years. Time steps shorter than a day are turned off in this mode.
+Turn on **Year-over-Year** in the Display panel on the right (on the Charts and Map views) to lay each year over the others, lined up by the time step you have chosen: hours, days, weeks or months of the year. Use it to compare seasonal patterns or arrival dates between years. It replots at once; nothing is re-queried.
+
+### Detections per Active Site
+
+Raw counts rise and fall with how many recorders were listening. Tick **Detections per active site** (Display panel, Charts and Map views) to divide each period's count by the number of sites that were active in it. The timeline, the map's timeline, Year-over-Year and the two heatmaps all use it; the axis or colourbar says so.
+
+**What a site is.** The station column, if your column mapping has one (for Haikubox data, the device serial). Otherwise the location, latitude and longitude rounded to three decimal places.
+
+**What active means.** Choose with the two options under the checkbox:
+
+- **All active sites, including those with no detections** (the default): a site counts in a period if it logged any detection at all in that period, of any species. A site that was listening and heard none of the species you selected still counts. A site that logged nothing at all, for example a recorder that was off or out of range, does not; Weft has no way to know it was there.
+- **Only sites where the selected species were detected**: a site counts only if one of the species you have ticked was detected there in that period.
+
+**How it is calculated.** Site activity is worked out per day. The first time you ask, Weft builds a per-day index for the table: one entry per day and site, with the site's location. On a large table that is one scan and takes a while, with "Counting active sites…" shown meanwhile; after that it is immediate and it is reused by every analysis of that table. The index is rebuilt by itself when the table grows or its column mapping changes.
+
+- Day steps use the index directly.
+- Week and month steps count the distinct sites across the days in the step, so a site active on one day of a week makes that week count it.
+- Hour and 6-hour steps use the day's count for every step in that day; Weft does not track activity within a day.
+- The Day x Hour heatmap divides each cell by the sites active on that day.
+- Year-over-Year divides each year's period by the sites active in that period of that year.
+
+The date range, station filter and selected places apply to the denominator. Numeric filters such as a score threshold do not: a site is active whatever the confidence of what it heard.
+
+**Subsets.** An analysis made with **Save these rows** holds only the rows it kept, so on its own every site in it is a site with a detection. With the default option, the denominator is read from the table the subset came from, so sites that heard other species still count.
+
+**Show active sites** draws the number of active sites on the timeline's second axis, and on the map marks the sites with no detection in the current period as grey rings, with a count. Use it to check the numbers the scale is dividing by.
 
 ## Environment Tab
 
