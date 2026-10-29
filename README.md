@@ -84,10 +84,12 @@ Every link goes to the latest release page — pick the matching file under **As
 - Home shows all your projects. Open one to see its process runs, data, analyses and documents.
 - Make a second library, model, run or analysis like one you already have, and Weft asks what is different about it, then shows that note in the list so you can tell them apart.
 - **Duplicate** copies a library, model or run's settings, not its data, and remembers which one it came from.
-- Recordings can stay on an external drive. If the drive is unplugged, reconnect it and carry on.
+- Recordings and large tables can stay on an external drive. If the drive is unplugged, reconnect it and carry on; if it moved, point Weft at the new place.
+- Move a project to another computer as a package, with its external files copied to a drive of your choice.
 
 ### Libraries and Models
-- Sort audio into categories with a spectrogram and playback, from folders on disk or straight from a Haikubox
+- Sort audio into categories with a spectrogram and playback, from folders on disk or straight from a Haikubox; label several chunks of a long file at once
+- Each clip remembers its source recording, offset, sample rate and location; libraries can be fixed-rate, re-cut at another clip length, and cleaned in a grid view
 - Train classifiers (EfficientNet-B0, EfficientNet-Lite, EfficientNet-ExtraLite) and watch the training curves as they go
 - Multi-label training for clips where more than one species calls at once
 - See exactly which sounds the model confuses, and listen to them
@@ -189,7 +191,24 @@ If your recordings are long (minutes to hours), turn on **chunking** to step thr
 
 - Set a **chunk duration** (e.g., 3 seconds) that's long enough to see your signal of interest
 - Weft steps through the file chunk by chunk
-- Each chunk you label is saved as its own WAV file in the category folder
+- Each chunk you label is saved as its own clip in the category folder
+- Press **0** to ignore a chunk with nothing in it
+
+A strip above the spectrogram shows the whole file. Click it to jump to a chunk; chunks you have labeled are marked in their category's colour, so you can see what is done when you come back to a file.
+
+To label several chunks at once, pick them on the strip, then press a category: **Shift-click** selects from the current chunk to the one you click, **Ctrl/Cmd-click** adds or removes single chunks, and dragging across the strip selects a range. One **Undo** takes the whole batch back.
+
+### Sample Rate
+
+When you make a library you choose its sample rate: **Native** keeps each file at the rate it was recorded at, or pick a rate and every clip is resampled to it as it is added. A fixed rate keeps a library consistent when recordings come from different recorders. Once a library has clips, its chunk length and rate are locked; unlock them deliberately if you need to change them.
+
+### Where Clips Came From
+
+Each clip remembers the recording it was cut from, its offset in that file, its sample rate and its location. The **Library** tab shows these for the clip on screen, with a link to the file. Libraries made before this was recorded can fill it in with **Rebuild clip index**.
+
+Locations can be set per source folder, or read from the recordings' paths with **Locations from the recordings' paths** when the folder names carry the site. Training can then balance across locations.
+
+**Other clip length…** (beside **Chunk to New Project**) re-cuts a whole library at a different clip length into a new library, each clip re-taken from its source recording around its centre. Clips whose source is missing are copied unchanged and listed in the report.
 
 ### Spectrogram Display Settings
 
@@ -231,6 +250,8 @@ Switch to **Library** mode to review what you've sorted:
 - Play back files to make sure they're in the right category
 - Move misclassified files to the correct category
 - Delete bad recordings
+
+**Grid** (beside **One clip**) shows a page of spectrogram thumbnails at once. Select the ones that are wrong, move them to another category in one go, and undo if you change your mind. It is the fast way to clean a category of a few hundred clips.
 
 ---
 
@@ -292,6 +313,10 @@ When you switch architectures, the learning rate and early stopping patience are
 | **Weighted Loss** | Counts mistakes on rare categories more heavily, so the model pays more attention to them. All samples are used. Best for most cases |
 | **Balanced Sampling** | Shows rare categories more often during training, so the model sees each class roughly equally. Useful when rare classes are distinctive but get drowned out by larger ones |
 | **None** | No balancing. Categories with more samples have more influence. Only use when categories are already roughly equal in size |
+
+**Balance by location** weights sampling so that no single site dominates a category, when clips carry locations (see *Where Clips Came From*). A model trained mostly on one site often only works at that site.
+
+**Grouping categories.** Several library categories can be trained as one class, for example two subspecies as one, or every noise category as one background class. The grouping belongs to the model, so the library's categories stay as they are.
 
 ### Multi-label Mode
 
@@ -542,7 +567,12 @@ After import, tell Weft what your columns mean:
 | **Datetime** | When each detection happened — turns on timelines and time-based summaries |
 | **Category** | What was detected — species, call type, etc. |
 | **Latitude / Longitude** | Where — turns on the map and environmental data |
+| **Station** | Which recorder or site (a serial number or station name) — used by the station filter and by *Detections per active site* |
 | **Numeric columns** | Any number to summarise (confidence, count, sound level, etc.) |
+
+### Tables on External Drives
+
+A table imported from a DuckDB file on an external drive stays there; Weft attaches the file rather than copying it. If the drive is unplugged, the table shows **Drive disconnected**; plug it back in and press **Reconnect**. If the file has moved, or the drive has a different letter or name on another computer, use **Locate…** to point the table at its new place. The project page lists everything a project needs from outside its own folder under **On external drives**.
 
 ## Finding and Fixing Data Problems
 
@@ -621,6 +651,7 @@ Six colourblind-safe palettes: Okabe-Ito, Wong, Tol Bright, Tol Muted, Set 2, Pa
 | **Category Breakdown** | How detections split across species or categories |
 | **Numeric Distributions** | Histograms of any numeric column |
 | **Day x Hour Heatmap** | When in the day and week activity happens |
+| **Category x Time Heatmap** | One row per category, colour by activity in each time step, for comparing many species at a glance |
 
 - Show or hide charts in the sidebar
 - Click a chart title to expand it full-screen (Esc to exit)
@@ -679,6 +710,8 @@ Filters in the left sidebar narrow down what every view shows (map, charts, tabl
 | **Threshold** | Hide locations and time steps with fewer than a set number of detections |
 
 For tables with more than 100 million rows, filters are not applied as you change them. Set your filters and click **Update** to run the query.
+
+An analysis remembers its answers. When you reopen one, the Table, Map and Charts show what the last run found, marked *from the last run*, without querying again; they are forgotten when the table's data changes.
 
 ### Save These Rows
 
@@ -784,6 +817,16 @@ WeftProjects/
 ```
 
 Your own recordings stay where you put them; Weft does not copy them.
+
+### Moving a Project to Another Computer
+
+A project folder is self-contained apart from what it points to outside itself: recordings, attached tables and clips on other drives. To move one:
+
+1. On the project page, click **Export package…**. Weft writes a single `.weftpack` file holding the project folder, with a README inside, and lists what it leaves out (temporary files, remembered query results, caches) and what the project needs from outside, with sizes. The package never contains the external files themselves.
+2. If the project has files on an external drive, **Copy to another drive…** (on the **On external drives** list, or as an option while exporting) copies them to a drive you choose with the same layout, so the project finds them there. Large copies run as a job you can stop and resume, and each file is checked after copying.
+3. On the other computer, click **Import package…** on the Projects page. Weft unpacks the project and, for each external drive it needs, asks where that drive is now and binds the files.
+
+A project folder that is simply copied into `WeftProjects` is picked up on the next launch as well; the package route is there so nothing is missed.
 
 ### Deleting
 
