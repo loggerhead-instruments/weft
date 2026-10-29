@@ -114,7 +114,8 @@ Every link goes to the latest release page — pick the matching file under **As
 - Compare years side by side
 - Total, average, maximum or minimum of any numeric column
 - A table that scrolls through millions of rows
-- **Save these rows** to turn a filtered subset into its own small, shareable analysis
+- **Save these rows** to turn a filtered subset into a table of its own on the Data tab, with a new analysis open on it
+- Scale counts by the number of sites active in each period, worked out per day, with a choice of what counts as active
 - Ask questions in plain English with the AI advisor (subscription): it proposes a method with checked references, builds the work as notebook steps in SQL, Python or R, and you can edit any step or export the notebook
 - Six colourblind-safe palettes; set colours per category
 - Dark or light charts for print
@@ -583,9 +584,17 @@ An analysis addresses one question about the project's data, such as diel callin
 
 ## Creating an Analysis
 
-1. Open **Analyses** in the top bar
-2. Click **New analysis** and say what it is about
-3. Choose the table it starts from
+An analysis holds no data of its own. It reads the project's tables, which live on the **Data** tab: bring data in, map its columns, fix problems and add environmental data there, once, and every analysis in the project sees the result.
+
+1. Open **Analyses** in the top bar, or click **+ New analysis** on the project page's Analyses card or in the header of an analysis you are in
+2. Say what it is about; a note on what makes it different from the others is optional
+3. Pick the table under **Data Source** in the left sidebar; the list is the project's Data tab
+
+The sidebar's **Column Mapping** fold shows the mapping set on the Data tab; change it there and every analysis follows.
+
+Rename an analysis from the project page's Analyses card or with **Rename** in its header. Names can carry apostrophes and other punctuation; the folder on disk is a plain version of the name.
+
+Display choices (chart layout and colours, Year-over-Year, Detections per active site, the map's mode and base map) sit in the **Display** panel on the right and apply at once. Filters and the time step sit in the left sidebar and are applied with **Update**.
 
 ## Map View
 
@@ -673,7 +682,7 @@ For tables with more than 100 million rows, filters are not applied as you chang
 
 ### Save These Rows
 
-Click **Save these rows** to make a new analysis from just the rows your filters keep, with their mapping, environmental data and sunrise times. It is small enough to share and fast to work in.
+Click **Save these rows as a new analysis** to keep just the rows your filters select. The rows are copied into a new table in the project's Data tab, named after the analysis, with the original's column mapping and weather enrichment; the new analysis opens on that table with the same filters. The name is suggested from the filters, for example "Acorn Woodpecker 2024". Sunrise times are worked out again for the new table the first time they are needed. The original table is not changed.
 
 ## How Detections Are Summed
 
