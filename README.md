@@ -5,7 +5,7 @@ Weft is a desktop app for passive acoustic monitoring, in air or underwater, for
 ## Features
 
 - **Custom classifiers for any signal.** Train a classifier on your own labeled clips (species, call types, noise sources) and apply it to the recordings from an entire deployment. Sample rates up to 400 kHz+ are supported, so ultrasonic recordings (bats, odontocetes) work too.
-- **Pretrained bird models.** For bird recordings, BirdNET and HaikuNet are built in for identification with no training, and can give a **Second opinion** on any detection.
+- **Pretrained bird models.** For bird recordings, BirdNET and HaikuNet are built in for identification with no training, and **Compare models** runs them on any detection.
 - **Soundscape metrics.** For any recording, with no model: RMS, peak, SEL, spectral entropy, ACI, kurtosis and 1/3-octave band levels, calibrated to dB re 1 µPa or dB re 20 µPa.
 - **Spatial and temporal plots.** Plot detections on maps and charts by hour, day, season or year, and compare sites and years.
 - **Environmental covariates.** Add weather, air quality, tides, ocean conditions, elevation, sunrise, sunset and moon phase for each site and date.
@@ -99,7 +99,7 @@ Every link goes to the latest release page — pick the matching file under **As
 
 ### Process
 - Run your model, a community model, BirdNET or HaikuNet over folders of recordings
-- Check detections by ear and eye in **Review**, with a **Second opinion** from BirdNET or HaikuNet
+- Check detections by ear and eye in **Review**, with **Compare models** to see what BirdNET or HaikuNet make of a detection
 - Measure the soundscape with no model: RMS, peak, SEL, spectral entropy, ACI, kurtosis, 1/3-octave bands and your own frequency bands
 - Calibrate to absolute sound levels (dB re 1 µPa underwater or dB re 20 µPa in air)
 
@@ -381,7 +381,7 @@ Runs a model over your audio files to find and label sounds.
 
 You can also turn on **Acoustic Metrics** to measure sound levels at the same time. Each detection then carries all the acoustic metric columns as well as the category and confidence.
 
-When the run finishes, open **Review** to check detections by eye and ear. Click **Second opinion** on any detection to see what BirdNET or HaikuNet makes of it.
+When the run finishes, open **Review** to check detections by eye and ear. Click **Compare models** on any detection to see what BirdNET and HaikuNet make of it.
 
 #### Consecutive Detections
 
